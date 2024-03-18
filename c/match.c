@@ -19,12 +19,14 @@
 #define DOTGLOB 1
 
 // set to 1 to enable case-insensitive glob matching
-#define NOCASEGLOB 0
+#ifndef NOCASEGLOB
+#define NOCASEGLOB 1
+#endif
 
 #define CASE(c) (NOCASEGLOB ? tolower(c) : (c))
 
 // Windows \ versus normal / path separator
-#ifdef OS_WIN
+#if defined(OS_WIN)
 #define PATHSEP '\\'
 #else
 #define PATHSEP '/'
@@ -33,7 +35,7 @@
 enum { FALSE = 0, TRUE = 1, ABORT = 2 };
 
 // returns TRUE if text string matches wild pattern with * and ?
-int naive_recursive_match(const char *text, const char *wild)
+static int naive_recursive_match(const char *text, const char *wild)
 {
   while (*text != '\0')
   {
@@ -64,7 +66,7 @@ int naive_recursive_match(const char *text, const char *wild)
 }
 
 // returns TRUE if text string matches wild pattern with * and ?
-int recursive_match(const char *text, const char *wild)
+static int recursive_match(const char *text, const char *wild)
 {
   while (*text != '\0')
   {
@@ -99,7 +101,7 @@ int recursive_match(const char *text, const char *wild)
 }
 
 // returns TRUE if text string matches wild pattern with * and ?
-int match(const char *text, const char *wild)
+static int match(const char *text, const char *wild)
 {
   const char *text_backup = NULL;
   const char *wild_backup = NULL;
@@ -135,7 +137,7 @@ int match(const char *text, const char *wild)
 }
 
 // returns TRUE if text string matches glob-like pattern with * and ?
-int globly_match(const char *text, const char *glob)
+static int globly_match(const char *text, const char *glob)
 {
   const char *text_backup = NULL;
   const char *glob_backup = NULL;
@@ -170,7 +172,7 @@ int globly_match(const char *text, const char *glob)
 }
 
 // returns TRUE if text string matches glob pattern with * and ?
-int glob_match(const char *text, const char *glob)
+static int glob_match(const char *text, const char *glob)
 {
   const char *text_backup = NULL;
   const char *glob_backup = NULL;
@@ -254,7 +256,7 @@ int glob_match(const char *text, const char *glob)
 }
 
 // returns TRUE if text string matches gitignore-style glob pattern
-int gitignore_glob_match(const char *text, const char *glob)
+static int gitignore_glob_match(const char *text, const char *glob)
 {
   const char *text1_backup = NULL;
   const char *glob1_backup = NULL;
@@ -407,7 +409,15 @@ int gitignore_glob_match(const char *text, const char *glob)
   return *glob == '\0' ? TRUE : FALSE;
 }
 
-int main(int argc, char **argv)
+
+#if !defined(NO_FASTGLOB_DEMO_APP)
+
+
+#if defined(BUILD_MONOLITHIC)
+#define main   match_demo_main
+#endif
+
+int main(int argc, const char **argv)
 {
   if (argc > 2)
   {
@@ -422,4 +432,8 @@ int main(int argc, char **argv)
   {
     printf("Usage: match 'string' 'pattern'\n");
   }
+  return 0;
 }
+
+#endif // NO_FASTGLOB_DEMO_APP
+
