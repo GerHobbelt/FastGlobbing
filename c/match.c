@@ -414,7 +414,7 @@ static int gitignore_glob_match(const char *text, const char *glob)
 
 
 #if defined(BUILD_MONOLITHIC)
-#define main   match_demo_main
+#define main   fastglob_demo_main
 #endif
 
 int main(int argc, const char **argv)
